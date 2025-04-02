@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
+import cs5500.expensetrackapp.restapi.exceptions.ResourceNotFoundException;
 
 
 
@@ -28,6 +29,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   /**
    * It will fetch the expenses from database
+   * @author Anne Zeng
    * @return list
    * */
   @Override
@@ -46,6 +48,18 @@ public class ExpenseServiceImpl implements ExpenseService {
     return listOfExpenses;
   }
 
+  /**
+   * It will fetch the single expense details from database
+   * @param expenseId
+   * @return ExpenseDTO
+   * */
+  @Override
+  public ExpenseDTO getExpenseByExpenseId(String expenseId) {
+    ExpenseEntity expenseEntity = expenseRepository.findByExpenseId(expenseId)
+        .orElseThrow(() -> new ResourceNotFoundException("Expense not found for the expense id "+expenseId));
+    log.info("Printing the expense entity details {}", expenseEntity);
+    return mapToExpenseDTO(expenseEntity);
+  }
 //  @Override
 //  public ExpenseDTO getExpenseByExpenseId(String expenseId) {
 //    return null;
