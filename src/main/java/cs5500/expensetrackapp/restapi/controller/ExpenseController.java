@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -86,6 +88,20 @@ public class ExpenseController {
     return mapToExpenseResponse(expenseDTO);
   }
 
+  /**
+   * It will update the expense details to database
+   * @param updateRequest
+   * @param expenseId
+   * @return ExpenseResponse
+   * */
+  @PutMapping("/expenses/{expenseId}")
+  public ExpenseResponse updateExpenseDetails(@RequestBody ExpenseRequest updateRequest, @PathVariable String expenseId) {
+    log.info("API PUT /expenses/{} request body {}", expenseId, updateRequest);
+    ExpenseDTO updatedExpenseDTO = mapToExpenseDTO(updateRequest);
+    updatedExpenseDTO = expenseService.updateExpenseDetails(updatedExpenseDTO, expenseId);
+    log.info("Printing the updated expense dto details {}", updatedExpenseDTO);
+    return mapToExpenseResponse(updatedExpenseDTO);
+  }
   /**
    * Mapper method to map values from Expense request to expense dto
    * @param expenseRequest

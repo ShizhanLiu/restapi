@@ -12,6 +12,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 import cs5500.expensetrackapp.restapi.exceptions.ResourceNotFoundException;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Service implementation for Expense module
@@ -81,6 +84,19 @@ public class ExpenseServiceImpl implements ExpenseService {
     newExpenseEntity = expenseRepository.save(newExpenseEntity);
     log.info("Printing the new expense entity details {}", newExpenseEntity);
     return mapToExpenseDTO(newExpenseEntity);
+  }
+
+  @Override
+  public ExpenseDTO updateExpenseDetails(ExpenseDTO expenseDTO, String expenseId) {
+    ExpenseEntity existingExpense = getExpenseEntity(expenseId);
+    ExpenseEntity updatedExpenseEntity = mapToExpenseEntity(expenseDTO);
+    updatedExpenseEntity.setId(existingExpense.getId());
+    updatedExpenseEntity.setExpenseId(existingExpense.getExpenseId());
+    updatedExpenseEntity.setCreatedAt(existingExpense.getCreatedAt());
+    updatedExpenseEntity.setUpdatedAt(existingExpense.getUpdatedAt());
+    updatedExpenseEntity = expenseRepository.save(updatedExpenseEntity);
+    log.info("Printing the updated expense entity details {}", updatedExpenseEntity);
+    return mapToExpenseDTO(updatedExpenseEntity);
   }
 
   /**
