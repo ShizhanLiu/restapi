@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Service interface for Expense module
- * @author Bushan SC
+ * @author Anne Zeng
  * */
 @Service
 //@RequiredArgsConstructor
@@ -19,12 +19,12 @@ public interface ExpenseService {
    * */
   List<ExpenseDTO> getAllExpenses();
 
-//  /**
-//   * It will fetch the single expense details from database
-//   * @param expenseId
-//   * @return ExpenseDTO
-//   * */
-//  ExpenseDTO getExpenseByExpenseId(String expenseId);
+  /**
+   * It will fetch the single expense details from database
+   * @param expenseId
+   * @return ExpenseDTO
+   * */
+  ExpenseDTO getExpenseByExpenseId(String expenseId);
 //
 //  /**
 //   * It will delete the expense from database

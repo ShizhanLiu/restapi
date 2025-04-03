@@ -1,6 +1,5 @@
 package cs5500.expensetrackapp.restapi.controller;
 
-
 import cs5500.expensetrackapp.restapi.dto.ExpenseDTO;
 import cs5500.expensetrackapp.restapi.io.ExpenseResponse;
 import cs5500.expensetrackapp.restapi.service.ExpenseService;
@@ -12,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,9 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * This is controller class for Expense module
  * @author:Shizhan Liu
- *
- *
- *
  * */
 public class ExpenseController {
 
@@ -45,6 +42,20 @@ public class ExpenseController {
     //Return the list/response
     return response;
   }
+
+  /**
+   * It will fetch the single expense from database
+   * @param expenseId
+   * @return ExpenseResponse
+   * */
+  @GetMapping("/expenses/{expenseId}")
+  public ExpenseResponse getExpenseById(@PathVariable String expenseId) {
+    log.info("API GET /expenses/{} called", expenseId);
+    ExpenseDTO expenseDTO = expenseService.getExpenseByExpenseId(expenseId);
+    log.info("Printing the expense details {}", expenseDTO);
+    return mapToExpenseResponse(expenseDTO);
+  }
+
   /**
    * Mapper method for converting expense dto object to expense response
    * @param expenseDTO
