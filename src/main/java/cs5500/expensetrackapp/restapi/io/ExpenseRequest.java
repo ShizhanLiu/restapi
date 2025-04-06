@@ -1,9 +1,9 @@
 package cs5500.expensetrackapp.restapi.io;
 
-//import jakarta.validation.constraints.NotBlank;
-//import jakarta.validation.constraints.NotEmpty;
-//import jakarta.validation.constraints.NotNull;
-//import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,18 +18,18 @@ import java.sql.Date;
 @Builder
 public class ExpenseRequest {
 
-//  @NotBlank(message = "Expense name is required")
-//  @Size(min = 3, message = "Expense name should be atleast 3 characters")
+  @NotBlank(message = "Expense name is required")
+  @Size(min = 3, message = "Expense name should be atleast 3 characters")
   private String name;
 
   private String note;
 
-//  @NotBlank(message = "Expense category is required")
+  @NotBlank(message = "Expense category is required")
   private String category;
 
-//  @NotNull(message = "Expense date is required")
+  @NotNull(message = "Expense date is required")
   private Date date;
 
-//  @NotNull(message = "Expense amount is required")
+  @NotNull(message = "Expense amount is required")
   private BigDecimal amount;
 }

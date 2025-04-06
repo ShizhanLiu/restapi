@@ -32,14 +32,14 @@ public interface ExpenseService {
    * @return void
    * */
   void deleteExpenseByExpenseId(String expenseId);
-//
-//  /**
-//   * It will save the expense details to database
-//   * @param expenseDTO
-//   * @return ExpenseDTO
-//   * */
-//  ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO);
-//
+
+  /**
+   * It will save the expense details to database
+   * @param expenseDTO
+   * @return ExpenseDTO
+   * */
+  ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO);
+
 //  /**
 //   * It will update the expense details to database
 //   * @param expenseDTO

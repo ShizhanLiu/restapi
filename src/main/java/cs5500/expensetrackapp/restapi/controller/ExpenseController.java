@@ -1,8 +1,10 @@
 package cs5500.expensetrackapp.restapi.controller;
 
 import cs5500.expensetrackapp.restapi.dto.ExpenseDTO;
+import cs5500.expensetrackapp.restapi.io.ExpenseRequest;
 import cs5500.expensetrackapp.restapi.io.ExpenseResponse;
 import cs5500.expensetrackapp.restapi.service.ExpenseService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -70,11 +72,34 @@ public class ExpenseController {
   }
 
   /**
+   * It will save the expense details to database
+   * @param expenseRequest
+   * @return ExpenseResponse
+   * */
+  @ResponseStatus(HttpStatus.CREATED)
+  @PostMapping("/expenses")
+  public ExpenseResponse saveExpenseDetails(@Valid @RequestBody ExpenseRequest expenseRequest) {
+    log.info("API POST /expenses called {}", expenseRequest);
+    ExpenseDTO expenseDTO = mapToExpenseDTO(expenseRequest);
+    expenseDTO = expenseService.saveExpenseDetails(expenseDTO);
+    return mapToExpenseResponse(expenseDTO);
+  }
+
+  /**
    * Mapper method for converting expense dto object to expense response
    * @param expenseDTO
    * @return ExpenseResponse
    * */
   private ExpenseResponse mapToExpenseResponse(ExpenseDTO expenseDTO) {
     return modelMapper.map(expenseDTO, ExpenseResponse.class);
+  }
+
+  /**
+   * Mapper method to map values from Expense request to expense dto
+   * @param expenseRequest
+   * @return ExpenseDTO
+   * */
+  private ExpenseDTO mapToExpenseDTO(ExpenseRequest expenseRequest) {
+    return modelMapper.map(expenseRequest, ExpenseDTO.class);
   }
 }
