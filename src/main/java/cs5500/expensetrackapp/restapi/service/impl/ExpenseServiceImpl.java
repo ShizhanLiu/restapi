@@ -12,6 +12,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 import cs5500.expensetrackapp.restapi.exceptions.ResourceNotFoundException;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Service implementation for Expense module
@@ -69,25 +72,36 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   /**
-   * Save the expense details to database
+
+   * It will save the expense details to database
    * @param expenseDTO
    * @return ExpenseDTO
    * */
+  //Controller: request input data from user -> convert to DTO, call serviceimpl method ->convert to entity, setID ->repository save ->convert to reponse
+
   @Override
   public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO) {
     ExpenseEntity newExpenseEntity = mapToExpenseEntity(expenseDTO);
     newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
     newExpenseEntity = expenseRepository.save(newExpenseEntity);
+
+    log.info("Printing the new expense entity details {}", newExpenseEntity);
     return mapToExpenseDTO(newExpenseEntity);
   }
 
-    /**
-   * Mapper method to map values from Expense dto to Expense entity
-   * @param expenseDTO
-   * @return ExpenseEntity
-   * */
-  private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO) {
-    return modelMapper.map(expenseDTO, ExpenseEntity.class);
+  @Override
+  public ExpenseDTO updateExpenseDetails(ExpenseDTO expenseDTO, String expenseId) {
+    ExpenseEntity existingExpense = getExpenseEntity(expenseId);
+    ExpenseEntity updatedExpenseEntity = mapToExpenseEntity(expenseDTO);
+    updatedExpenseEntity.setId(existingExpense.getId());
+    updatedExpenseEntity.setExpenseId(existingExpense.getExpenseId());
+    updatedExpenseEntity.setCreatedAt(existingExpense.getCreatedAt());
+    updatedExpenseEntity.setUpdatedAt(existingExpense.getUpdatedAt());
+    updatedExpenseEntity = expenseRepository.save(updatedExpenseEntity);
+    log.info("Printing the updated expense entity details {}", updatedExpenseEntity);
+    return mapToExpenseDTO(updatedExpenseEntity);
+
+
   }
 
   /**
@@ -107,6 +121,15 @@ public class ExpenseServiceImpl implements ExpenseService {
   private ExpenseEntity getExpenseEntity(String expenseId) {
     return expenseRepository.findByExpenseId(expenseId)
         .orElseThrow(() -> new ResourceNotFoundException("Expense not found for the expense id "+ expenseId));
+  }
+
+  /**
+   * Mapper method to map values from Expense dto to Expense entity
+   * @param expenseDTO
+   * @return ExpenseEntity
+   * */
+  private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO) {
+    return modelMapper.map(expenseDTO, ExpenseEntity.class);
   }
 
 //
