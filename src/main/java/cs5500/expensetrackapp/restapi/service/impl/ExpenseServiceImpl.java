@@ -5,6 +5,7 @@ import cs5500.expensetrackapp.restapi.entity.ExpenseEntity;
 import cs5500.expensetrackapp.restapi.repository.ExpenseRepository;
 import cs5500.expensetrackapp.restapi.service.ExpenseService;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -68,6 +69,28 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   /**
+   * Save the expense details to database
+   * @param expenseDTO
+   * @return ExpenseDTO
+   * */
+  @Override
+  public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO) {
+    ExpenseEntity newExpenseEntity = mapToExpenseEntity(expenseDTO);
+    newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
+    newExpenseEntity = expenseRepository.save(newExpenseEntity);
+    return mapToExpenseDTO(newExpenseEntity);
+  }
+
+    /**
+   * Mapper method to map values from Expense dto to Expense entity
+   * @param expenseDTO
+   * @return ExpenseEntity
+   * */
+  private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO) {
+    return modelMapper.map(expenseDTO, ExpenseEntity.class);
+  }
+
+  /**
    * Mapper method to convert expense entity to expense DTO
    * @param expenseEntity
    * @return ExpenseDTO
@@ -88,23 +111,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 //
 //  @Override
-//  public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO) {
-//    return null;
-//  }
-//
-//  @Override
 //  public ExpenseDTO updateExpenseDetails(ExpenseDTO expenseDTO, String expenseId) {
 //    return null;
 //  }
-//  /**
-//   * Mapper method to map values from Expense dto to Expense entity
-////   * @param expenseDTO
-//   * @return ExpenseEntity
-//   * */
-////  private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO) {
-////    return modelMapper.map(expenseDTO, ExpenseEntity.class);
-////  }
-
-
-
 }
