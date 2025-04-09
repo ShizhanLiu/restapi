@@ -72,16 +72,19 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   /**
+
    * It will save the expense details to database
    * @param expenseDTO
    * @return ExpenseDTO
    * */
   //Controller: request input data from user -> convert to DTO, call serviceimpl method ->convert to entity, setID ->repository save ->convert to reponse
+
   @Override
   public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO) {
     ExpenseEntity newExpenseEntity = mapToExpenseEntity(expenseDTO);
     newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
     newExpenseEntity = expenseRepository.save(newExpenseEntity);
+
     log.info("Printing the new expense entity details {}", newExpenseEntity);
     return mapToExpenseDTO(newExpenseEntity);
   }
@@ -97,6 +100,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     updatedExpenseEntity = expenseRepository.save(updatedExpenseEntity);
     log.info("Printing the updated expense entity details {}", updatedExpenseEntity);
     return mapToExpenseDTO(updatedExpenseEntity);
+
+
   }
 
   /**
@@ -126,6 +131,7 @@ public class ExpenseServiceImpl implements ExpenseService {
   private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO) {
     return modelMapper.map(expenseDTO, ExpenseEntity.class);
   }
+
 //
 //  @Override
 //  public ExpenseDTO updateExpenseDetails(ExpenseDTO expenseDTO, String expenseId) {

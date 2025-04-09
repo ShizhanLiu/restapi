@@ -84,11 +84,14 @@ public class ExpenseController {
     log.info("API POST /expenses called {}", expenseRequest);
     ExpenseDTO expenseDTO = mapToExpenseDTO(expenseRequest);
     expenseDTO = expenseService.saveExpenseDetails(expenseDTO);
+
     log.info("Printing the expense dto {}", expenseDTO);
+
     return mapToExpenseResponse(expenseDTO);
   }
 
   /**
+
    * It will update the expense details to database
    * @param updateRequest
    * @param expenseId
@@ -112,11 +115,21 @@ public class ExpenseController {
   }
 
   /**
+
    * Mapper method for converting expense dto object to expense response
    * @param expenseDTO
    * @return ExpenseResponse
    * */
   private ExpenseResponse mapToExpenseResponse(ExpenseDTO expenseDTO) {
     return modelMapper.map(expenseDTO, ExpenseResponse.class);
+  }
+
+  /**
+   * Mapper method to map values from Expense request to expense dto
+   * @param expenseRequest
+   * @return ExpenseDTO
+   * */
+  private ExpenseDTO mapToExpenseDTO(ExpenseRequest expenseRequest) {
+    return modelMapper.map(expenseRequest, ExpenseDTO.class);
   }
 }
