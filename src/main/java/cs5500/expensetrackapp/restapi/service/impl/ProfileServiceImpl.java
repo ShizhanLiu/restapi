@@ -2,6 +2,7 @@ package cs5500.expensetrackapp.restapi.service.impl;
 
 import cs5500.expensetrackapp.restapi.dto.ProfileDTO;
 import cs5500.expensetrackapp.restapi.entity.ProfileEntity;
+import cs5500.expensetrackapp.restapi.exceptions.ItemExistsException;
 import cs5500.expensetrackapp.restapi.repository.ProfileRepository;
 import cs5500.expensetrackapp.restapi.service.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,13 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public ProfileDTO createProfile(ProfileDTO profileDTO){
+        if(profileRepository.existsByEmail(profileDTO.getEmail() )){
+            throw new ItemExistsException("Profile already exists" + profileDTO.getEmail());
+        }
         profileDTO.setPassword(encoder.encode(profileDTO.getPassword()));
         ProfileEntity profileEntity = mapToProfileEntity(profileDTO);
         profileEntity.setProfileId(UUID.randomUUID().toString());
-//        Call the repository method
+        //TODO: check for the email exists
         profileEntity = profileRepository.save(profileEntity);
         log.info("Printing the profile entity details {}", profileEntity);
         return mapToProfileDTO(profileEntity);
