@@ -7,12 +7,15 @@ import cs5500.expensetrackapp.restapi.io.ProfileRequest;
 import cs5500.expensetrackapp.restapi.io.ProfileResponse;
 import cs5500.expensetrackapp.restapi.service.CustomUserDetailsService;
 import cs5500.expensetrackapp.restapi.service.ProfileService;
+import cs5500.expensetrackapp.restapi.service.TokenBlacklistService;
 import cs5500.expensetrackapp.restapi.service.util.JwtTokenUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -32,6 +35,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final CustomUserDetailsService userDetailsService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     /**
      * API endpoint to register new user
@@ -52,10 +56,25 @@ public class AuthController {
     public AuthResponse authenticateProfile(@RequestBody AuthRequest authRequest) throws Exception {
         log.info("API /login is called {}", authRequest);
         authenticate(authRequest);
-
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
         return new AuthResponse(token, authRequest.getEmail());
+    }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/signout")
+    public void signout(HttpServletRequest request) {
+        String jwtToken = extractJwtTokenFromRequest(request);
+        if (jwtToken != null){
+            tokenBlacklistService.addTokenToBlacklist(jwtToken);
+        }
+    }
+
+    private String extractJwtTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
     private void authenticate(AuthRequest authRequest) throws Exception {
