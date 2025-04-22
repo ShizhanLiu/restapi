@@ -5,12 +5,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+
 /**
  * Service interface for Expense module
- * @author Anne Zeng
+ * @author Bushan SC
  * */
-@Service
-//@RequiredArgsConstructor
 public interface ExpenseService {
 
   /**

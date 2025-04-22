@@ -19,31 +19,31 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This is controller class for Expense module
+ * @author Bushan SC
+ * */
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin("*")
-/**
- * This is controller class for Expense module
- * @author:Shizhan Liu
- * */
 public class ExpenseController {
 
   private final ExpenseService expenseService;
   private final ModelMapper modelMapper;
+
+
   /**
    * It will fetch the expenses from database
    * @return list
    * */
   @GetMapping("/expenses")
   public List<ExpenseResponse> getExpenses() {
-   log.info("API GET /expenses called");
+    log.info("API GET /expenses called");
     //Call the service method
     List<ExpenseDTO> list = expenseService.getAllExpenses();
     log.info("Printing the data from service {}", list);
     //Convert the Expense DTO to Expense Response
-    List<ExpenseResponse> response = list.stream().map(expenseDTO -> mapToExpenseResponse(expenseDTO)).collect(
-        Collectors.toList());
+    List<ExpenseResponse> response = list.stream().map(expenseDTO -> mapToExpenseResponse(expenseDTO)).collect(Collectors.toList());
     //Return the list/response
     return response;
   }
@@ -95,13 +95,14 @@ public class ExpenseController {
    * @return ExpenseResponse
    * */
   @PutMapping("/expenses/{expenseId}")
-  public ExpenseResponse updateExpenseDetails(@RequestBody ExpenseRequest updateRequest, @PathVariable String expenseId) {
+  public ExpenseResponse updateExpenseDetails(@Valid @RequestBody ExpenseRequest updateRequest, @PathVariable String expenseId) {
     log.info("API PUT /expenses/{} request body {}", expenseId, updateRequest);
     ExpenseDTO updatedExpenseDTO = mapToExpenseDTO(updateRequest);
     updatedExpenseDTO = expenseService.updateExpenseDetails(updatedExpenseDTO, expenseId);
     log.info("Printing the updated expense dto details {}", updatedExpenseDTO);
     return mapToExpenseResponse(updatedExpenseDTO);
   }
+
   /**
    * Mapper method to map values from Expense request to expense dto
    * @param expenseRequest
