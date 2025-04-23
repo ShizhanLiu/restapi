@@ -37,7 +37,7 @@ public class ExpenseController {
    * */
   @GetMapping("/expenses")
   public List<ExpenseResponse> getExpenses() {
-   log.info("API GET /expenses called");
+    log.info("API GET /expenses called");
     //Call the service method
     List<ExpenseDTO> list = expenseService.getAllExpenses();
     log.info("Printing the data from service {}", list);
