@@ -73,6 +73,7 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   /**
+
    * It will save the expense details to database
    * @param expenseDTO
    * @return ExpenseDTO
@@ -84,6 +85,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
     newExpenseEntity.setOwner(profileEntity);
     newExpenseEntity = expenseRepository.save(newExpenseEntity);
+
     log.info("Printing the new expense entity details {}", newExpenseEntity);
     return mapToExpenseDTO(newExpenseEntity);
   }
@@ -100,6 +102,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     updatedExpenseEntity = expenseRepository.save(updatedExpenseEntity);
     log.info("Printing the updated expense entity details {}", updatedExpenseEntity);
     return mapToExpenseDTO(updatedExpenseEntity);
+
+
   }
 
   /**
@@ -131,3 +135,4 @@ public class ExpenseServiceImpl implements ExpenseService {
         .orElseThrow(() -> new ResourceNotFoundException("Expense not found for the expense id "+ expenseId));
   }
 }
+
