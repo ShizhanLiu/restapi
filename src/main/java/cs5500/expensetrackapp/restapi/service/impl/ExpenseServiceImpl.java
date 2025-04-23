@@ -2,7 +2,9 @@ package cs5500.expensetrackapp.restapi.service.impl;
 
 import cs5500.expensetrackapp.restapi.dto.ExpenseDTO;
 import cs5500.expensetrackapp.restapi.entity.ExpenseEntity;
+import cs5500.expensetrackapp.restapi.entity.ProfileEntity;
 import cs5500.expensetrackapp.restapi.repository.ExpenseRepository;
+import cs5500.expensetrackapp.restapi.service.AuthService;
 import cs5500.expensetrackapp.restapi.service.ExpenseService;
 import java.util.List;
 import java.util.UUID;
@@ -18,16 +20,17 @@ import java.util.stream.Collectors;
 
 /**
  * Service implementation for Expense module
- * @author Shizhan Liu
+ * @author Bushan SC
  * */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ExpenseServiceImpl implements ExpenseService {
+
   private final ExpenseRepository expenseRepository;
   private final ModelMapper modelMapper;
 
-//  private final AuthService authService;
+  private final AuthService authService;
 
   /**
    * It will fetch the expenses from database
@@ -35,15 +38,13 @@ public class ExpenseServiceImpl implements ExpenseService {
    * */
   @Override
   public List<ExpenseDTO> getAllExpenses() {
-    List<ExpenseEntity> list = expenseRepository.findAll();
-    List<ExpenseDTO> listOfExpenses = list.stream().map(expenseEntity -> mapToExpenseDTO(expenseEntity)).collect(Collectors.toList());
     //Call the repository method
-//    Long loggedInProfileId = authService.getLoggedInProfile().getId();
-//    List<ExpenseEntity> list = expenseRepository.findByOwnerId(loggedInProfileId);
-      log.info("Printing the data from repository {}", list);
-//    //Convert the Entity object to DTO object
-//    List<ExpenseDTO> listOfExpenses = list.stream().map(expenseEntity -> mapToExpenseDTO(expenseEntity)).collect(Collectors.toList());
-//    //Return the list
+    Long loggedInProfileId = authService.getLoggedInProfile().getId();
+    List<ExpenseEntity> list = expenseRepository.findByOwnerId(loggedInProfileId);
+    log.info("Printing the data from repository {}", list);
+    //Convert the Entity object to DTO object
+    List<ExpenseDTO> listOfExpenses = list.stream().map(expenseEntity -> mapToExpenseDTO(expenseEntity)).collect(Collectors.toList());
+    //Return the list
     return listOfExpenses;
   }
 
@@ -77,12 +78,12 @@ public class ExpenseServiceImpl implements ExpenseService {
    * @param expenseDTO
    * @return ExpenseDTO
    * */
-  //Controller: request input data from user -> convert to DTO, call serviceimpl method ->convert to entity, setID ->repository save ->convert to reponse
-
   @Override
   public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO) {
+    ProfileEntity profileEntity = authService.getLoggedInProfile();
     ExpenseEntity newExpenseEntity = mapToExpenseEntity(expenseDTO);
     newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
+    newExpenseEntity.setOwner(profileEntity);
     newExpenseEntity = expenseRepository.save(newExpenseEntity);
 
     log.info("Printing the new expense entity details {}", newExpenseEntity);
@@ -97,11 +98,21 @@ public class ExpenseServiceImpl implements ExpenseService {
     updatedExpenseEntity.setExpenseId(existingExpense.getExpenseId());
     updatedExpenseEntity.setCreatedAt(existingExpense.getCreatedAt());
     updatedExpenseEntity.setUpdatedAt(existingExpense.getUpdatedAt());
+    updatedExpenseEntity.setOwner(authService.getLoggedInProfile());
     updatedExpenseEntity = expenseRepository.save(updatedExpenseEntity);
     log.info("Printing the updated expense entity details {}", updatedExpenseEntity);
     return mapToExpenseDTO(updatedExpenseEntity);
 
 
+  }
+
+  /**
+   * Mapper method to map values from Expense dto to Expense entity
+   * @param expenseDTO
+   * @return ExpenseEntity
+   * */
+  private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO) {
+    return modelMapper.map(expenseDTO, ExpenseEntity.class);
   }
 
   /**
@@ -119,22 +130,9 @@ public class ExpenseServiceImpl implements ExpenseService {
    * @return ExpenseEntity
    * */
   private ExpenseEntity getExpenseEntity(String expenseId) {
-    return expenseRepository.findByExpenseId(expenseId)
+    Long id = authService.getLoggedInProfile().getId();
+    return expenseRepository.findByOwnerIdAndExpenseId(id, expenseId)
         .orElseThrow(() -> new ResourceNotFoundException("Expense not found for the expense id "+ expenseId));
   }
-
-  /**
-   * Mapper method to map values from Expense dto to Expense entity
-   * @param expenseDTO
-   * @return ExpenseEntity
-   * */
-  private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO) {
-    return modelMapper.map(expenseDTO, ExpenseEntity.class);
-  }
-
-//
-//  @Override
-//  public ExpenseDTO updateExpenseDetails(ExpenseDTO expenseDTO, String expenseId) {
-//    return null;
-//  }
 }
+

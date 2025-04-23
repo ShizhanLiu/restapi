@@ -8,6 +8,7 @@ import java.util.Optional;
 
 /**
  * JPA repository for Expense resource
+ * @author Bushan SC
  * */
 public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
 
@@ -17,7 +18,8 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
    * @return Optional
    * */
   Optional<ExpenseEntity> findByExpenseId(String expenseId);
-//  List<ExpenseEntity> findByOwnerId(Long id);
 
-//  Optional<ExpenseEntity> findByOwnerIdAndExpenseId(Long id, String expenseId);
+  List<ExpenseEntity> findByOwnerId(Long id);
+
+  Optional<ExpenseEntity> findByOwnerIdAndExpenseId(Long id, String expenseId);
 }
