@@ -106,6 +106,10 @@ public class ExpenseController {
     return mapToExpenseResponse(updatedExpenseDTO);
   }
 
+  private ExpenseDTO mapToExpenseDTO(ExpenseRequest expenseRequest) {
+    return modelMapper.map(expenseRequest, ExpenseDTO.class);
+  }
+
   /**
    * Mapper method to map values from Expense request to expense dto
    * @param expenseRequest
