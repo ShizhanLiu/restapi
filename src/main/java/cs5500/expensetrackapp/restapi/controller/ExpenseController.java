@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 /**
  * This is controller class for Expense module
- * @author Bushan SC
  * */
 @RestController
 @RequiredArgsConstructor
@@ -106,15 +105,6 @@ public class ExpenseController {
     return mapToExpenseResponse(updatedExpenseDTO);
   }
 
-  private ExpenseDTO mapToExpenseDTO(ExpenseRequest expenseRequest) {
-    return modelMapper.map(expenseRequest, ExpenseDTO.class);
-  }
-
-  /**
-   * Mapper method to map values from Expense request to expense dto
-   * @param expenseRequest
-   * @return ExpenseDTO
-   * */
   private ExpenseDTO mapToExpenseDTO(ExpenseRequest expenseRequest) {
     return modelMapper.map(expenseRequest, ExpenseDTO.class);
   }
