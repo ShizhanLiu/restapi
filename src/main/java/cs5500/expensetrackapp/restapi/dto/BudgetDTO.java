@@ -9,27 +9,25 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ExpenseDTO {
-  private String expenseId;
+public class BudgetDTO {
+  private String budgetId;
 
   private String name;
 
   private String note;
 
-  private String category;
+  private Date yearmonth;
 
-  private Date date;
+  private BigDecimal budget;
 
-  private BigDecimal amount;
+  private BigDecimal balance;
 
   private Timestamp createdAt;
 
   private Timestamp updatedAt;
 
-  private boolean alert;
 }

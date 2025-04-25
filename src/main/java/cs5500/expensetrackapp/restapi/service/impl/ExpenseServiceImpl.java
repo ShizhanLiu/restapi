@@ -1,8 +1,10 @@
 package cs5500.expensetrackapp.restapi.service.impl;
 
 import cs5500.expensetrackapp.restapi.dto.ExpenseDTO;
+import cs5500.expensetrackapp.restapi.entity.BudgetEntity;
 import cs5500.expensetrackapp.restapi.entity.ExpenseEntity;
 import cs5500.expensetrackapp.restapi.entity.ProfileEntity;
+import cs5500.expensetrackapp.restapi.repository.BudgetRepository;
 import cs5500.expensetrackapp.restapi.repository.ExpenseRepository;
 import cs5500.expensetrackapp.restapi.service.AuthService;
 import cs5500.expensetrackapp.restapi.service.ExpenseService;
@@ -14,13 +16,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 import cs5500.expensetrackapp.restapi.exceptions.ResourceNotFoundException;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Service implementation for Expense module
- * @author Bushan SC
+ * @author Anne
  * */
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ import java.util.stream.Collectors;
 public class ExpenseServiceImpl implements ExpenseService {
 
   private final ExpenseRepository expenseRepository;
+  private final BudgetRepository budgetRepository;
   private final ModelMapper modelMapper;
 
   private final AuthService authService;
@@ -69,6 +74,9 @@ public class ExpenseServiceImpl implements ExpenseService {
   public void deleteExpenseByExpenseId(String expenseId) {
     ExpenseEntity expenseEntity = getExpenseEntity(expenseId);
     log.info("Printing the expense entity {}", expenseEntity);
+    //add up balance for budget
+    expenseEntity.setAmount(expenseEntity.getAmount().negate());
+    updateBudgetBalance(expenseEntity);
     expenseRepository.delete(expenseEntity);
   }
 
@@ -85,9 +93,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
     newExpenseEntity.setOwner(profileEntity);
     newExpenseEntity = expenseRepository.save(newExpenseEntity);
-
+    boolean alert = updateBudgetBalance(newExpenseEntity);
     log.info("Printing the new expense entity details {}", newExpenseEntity);
-    return mapToExpenseDTO(newExpenseEntity);
+    ExpenseDTO dto = mapToExpenseDTO(newExpenseEntity);
+    dto.setAlert(alert);
+    return dto;
   }
 
   @Override
@@ -99,11 +109,19 @@ public class ExpenseServiceImpl implements ExpenseService {
     updatedExpenseEntity.setCreatedAt(existingExpense.getCreatedAt());
     updatedExpenseEntity.setUpdatedAt(existingExpense.getUpdatedAt());
     updatedExpenseEntity.setOwner(authService.getLoggedInProfile());
-    updatedExpenseEntity = expenseRepository.save(updatedExpenseEntity);
+    //for calculating new balance use, revert back after use
+    BigDecimal delta = updatedExpenseEntity.getAmount().subtract(existingExpense.getAmount());
+    updatedExpenseEntity.setAmount(delta);
+    boolean alert = updateBudgetBalance(updatedExpenseEntity);
+    updatedExpenseEntity.setAmount(existingExpense.getAmount().add(delta));
     log.info("Printing the updated expense entity details {}", updatedExpenseEntity);
-    return mapToExpenseDTO(updatedExpenseEntity);
-
-
+    updatedExpenseEntity = expenseRepository.save(updatedExpenseEntity);
+    ExpenseDTO dto = mapToExpenseDTO(updatedExpenseEntity);
+    dto.setAlert(alert);
+    return dto;
+//    updatedExpenseEntity = expenseRepository.save(updatedExpenseEntity);
+//    log.info("Printing the updated expense entity details {}", updatedExpenseEntity);
+//    return mapToExpenseDTO(updatedExpenseEntity);
   }
 
   /**
@@ -134,5 +152,23 @@ public class ExpenseServiceImpl implements ExpenseService {
     return expenseRepository.findByOwnerIdAndExpenseId(id, expenseId)
         .orElseThrow(() -> new ResourceNotFoundException("Expense not found for the expense id "+ expenseId));
   }
-}
 
+  private boolean updateBudgetBalance(ExpenseEntity expenseEntity) {
+    boolean alert = false;
+    Date date = expenseEntity.getDate();
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    int year = calendar.get(Calendar.YEAR);
+    int month = calendar.get(Calendar.MONTH) + 1;
+    List<BudgetEntity> budgets = budgetRepository.findByOwnerIdAndYearAndMonth(expenseEntity.getOwner().getId(), year, month);
+    for (BudgetEntity budget : budgets) {
+      budget.setBalance(budget.getBalance().subtract(expenseEntity.getAmount()));
+      budgetRepository.save(budget);
+      // check if less than 20% balance is left
+      if (budget.getBalance().compareTo(budget.getBudget().multiply(new BigDecimal("0.2"))) < 0) {
+        alert = true;
+      }
+    }
+    return alert;
+  }
+}
