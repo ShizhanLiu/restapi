@@ -1,4 +1,4 @@
-package cs5500.expensetrackapp.restapi.dto;
+package cs5500.expensetrackapp.restapi.io;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,27 +9,25 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ExpenseDTO {
-  private String expenseId;
+public class BudgetResponse {
+
+  private String budgetId;
 
   private String name;
 
   private String note;
 
-  private String category;
+  private Date yearmonth;
 
-  private Date date;
+  private BigDecimal budget;
 
-  private BigDecimal amount;
+  private BigDecimal balance;
 
   private Timestamp createdAt;
 
   private Timestamp updatedAt;
-
-  private boolean alert;
 }
