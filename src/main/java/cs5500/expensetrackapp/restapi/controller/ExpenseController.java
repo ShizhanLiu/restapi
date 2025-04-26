@@ -115,10 +115,6 @@ public class ExpenseController {
    * @param expenseRequest
    * @return ExpenseDTO
    * */
-  private ExpenseDTO mapToExpenseDTO(ExpenseRequest expenseRequest) {
-    return modelMapper.map(expenseRequest, ExpenseDTO.class);
-  }
-
   /**
 
    * Mapper method for converting expense dto object to expense response
