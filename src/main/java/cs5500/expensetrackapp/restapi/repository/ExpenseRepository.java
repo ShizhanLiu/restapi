@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 /**
  * JPA repository for Expense resource
- * @author Bushan SC
  * */
 public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
 

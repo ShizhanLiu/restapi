@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * Service interface for Expense module
- * @author Bushan SC
  * */
 public interface BudgetService {
 

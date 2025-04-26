@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 /**
  * Global exceptional handler for all the exceptions
- * @author Bushan SC
  *
  * */
 @Slf4j

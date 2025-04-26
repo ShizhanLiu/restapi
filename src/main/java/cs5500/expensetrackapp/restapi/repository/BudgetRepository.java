@@ -12,7 +12,6 @@ import java.util.Optional;
 
 /**
  * JPA repository for Expense resource
- * @author Bushan SC
  * */
 public interface BudgetRepository extends JpaRepository<BudgetEntity, Long> {
 

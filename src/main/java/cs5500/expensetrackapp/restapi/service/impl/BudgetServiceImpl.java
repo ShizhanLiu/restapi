@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 /**
  * Service implementation for Expense module
- * @author Bushan SC
  * */
 @Service
 @RequiredArgsConstructor

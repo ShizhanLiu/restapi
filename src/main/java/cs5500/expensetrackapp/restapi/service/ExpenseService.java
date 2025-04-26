@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * Service interface for Expense module
- * @author Bushan SC
  * */
 public interface ExpenseService {
 

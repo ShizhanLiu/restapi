@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 /**
  * This is controller class for Expense module
- * @author Bushan SC
  * */
 @RestController
 @RequiredArgsConstructor
